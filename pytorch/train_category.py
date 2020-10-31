@@ -114,3 +114,4 @@ if __name__=='__main__':
     train_model(dataloaders, model, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size)
 
     plot(acc_train_list, acc_test_list, "pretrained.jpg", num_epochs=Config['num_epochs'])
+
