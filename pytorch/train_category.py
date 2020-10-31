@@ -12,10 +12,29 @@ import os.path as osp
 from utils import Config
 from model import model
 from data import get_dataloader
+import sys
+import matplotlib.pyplot as plt
+import numpy as np
 
+
+def plot(x_list, y_list, fname, num_epochs=Config['num_epochs']):
+    l = [i for i in range(1, len(x_list)+1)]
+    new_ticks=np.linspace(0,num_epochs,5)
+    plt.plot(l, x_list,label="Training set")
+    plt.plot(l, y_list,label="Test set")
+
+    plt.xticks(new_ticks)
+    plt.title("Accuracy Performance Versus Epoch")
+    plt.legend(labels=["Training set", "Test set"],loc='best')
+    plt.xlabel("Epoches")
+    plt.ylabel("Accuracy")
+    plt.savefig(fname=fname)
+    plt.close()
+    return 
 
 
 def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dataset_size):
+
     model.to(device)
     since = time.time()
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -40,6 +59,7 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
                 optimizer.zero_grad()
 
                 with torch.set_grad_enabled(phase=='train'):
+                    # use pretrained model - ResNet
                     outputs = model(inputs)
                     _, pred = torch.max(outputs, 1)
                     loss = criterion(outputs, labels)
@@ -57,10 +77,16 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
 
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
 
+            if phase == 'train':
+                acc_train_list.append(epoch_acc)
+            if phase == 'test':
+                acc_test_list.append(epoch_acc)
+            
             if phase=='test' and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
 
+        # save model.pth - dictionary (best_model_wts)
         torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'model.pth'))
         print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'model.pth')))
 
@@ -81,4 +107,10 @@ if __name__=='__main__':
     optimizer = optim.RMSprop(model.parameters(), lr=Config['learning_rate'])
     device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')
 
+    # acc_list - global variables
+    acc_train_list = []
+    acc_test_list = []
+
     train_model(dataloaders, model, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size)
+
+    plot(acc_train_list, acc_test_list, "pretrained.jpg", num_epochs=Config['num_epochs'])

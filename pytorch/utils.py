@@ -3,8 +3,10 @@ import os
 import os.path as osp
 import argparse
 
+
+parse = argparse.ArgumentParser(description="run on AWS or PC")
 Config ={}
-Config['root_path'] = '/mnt/jiali/data/outfits/new_polyvore/test/polyvore_outfits'
+Config['root_path'] = '//Users/tieming/code/dataset/polyvore_outfits'
 Config['meta_file'] = 'polyvore_item_metadata.json'
 Config['checkpoint_path'] = ''
 
