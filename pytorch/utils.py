@@ -22,4 +22,4 @@ Config['num_workers'] = 5
 
 # user-defined model
 Config['pretrained'] = False
-Config['BATCH_NORMALIZATION_BEFORE_ACTIVATION'] = True
+Config['VGG16'] = True

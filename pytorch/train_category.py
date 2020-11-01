@@ -10,7 +10,7 @@ from tqdm import tqdm
 import os.path as osp
 
 from utils import Config
-from model import model_pretrained, MiniVggBnBefore, MiniVggBnAfter 
+from model import model_pretrained, MiniVggBnBefore, MyVgg11 
 from data import get_dataloader
 import sys
 import matplotlib.pyplot as plt
@@ -67,12 +67,16 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
                         loss.backward()
                         optimizer.step()
 
-
-                running_loss += loss.item() * inputs.size(0)
-                running_corrects += torch.sum(pred==labels.data)
+                if pretrained == True:
+                    running_loss += loss.item() * inputs.size(0)
+                    running_corrects += torch.sum(pred==labels.data)
+                else:
+                    running_loss += loss.data
+                    running_corrects += torch.sum(torch.eq(torch.argmax(outputs, axis=1), labels).long())
 
             epoch_loss = running_loss / dataset_size[phase]
             epoch_acc = running_corrects.double() / dataset_size[phase]
+
 
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
 
@@ -134,10 +138,10 @@ if __name__=='__main__':
     
     else:
 
-        if Config['BATCH_NORMALIZATION_BEFORE_ACTIVATION']:
-            model = MiniVggBnBefore(classes)
+        if Config['VGG16']:
+            model = MiniVggBnBefore(class_num=classes)
         else:    
-            model = MiniVggBnAfter(classes)
+            model = MyVgg11(class_num=classes)
         
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.RMSprop(model.parameters(), lr=Config['learning_rate'])
