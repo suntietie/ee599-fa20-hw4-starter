@@ -171,7 +171,7 @@ class MyVgg11(nn.Module):
         self.dropout4 = nn.Dropout2d(0.25)   
 
         # fifth: CONV => RELU => CONV => RELU => CONV => RELU => POOL set
-        self.conv5_1 = nn.Conv2d(256, 512, 3, padding = 1)
+        self.conv5_1 = nn.Conv2d(512, 512, 3, padding = 1)
         self.norm5_1 = nn.BatchNorm2d(512)
     
         self.conv5_2 = nn.Conv2d(512, 512, 3, padding = 1)
