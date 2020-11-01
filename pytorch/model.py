@@ -232,7 +232,7 @@ class MyVgg11(nn.Module):
 
         out = self.fc4(out)
         # softmax classifier
-        
+        out = F.softmax(out)
         return out
 
 

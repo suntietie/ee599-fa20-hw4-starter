@@ -87,8 +87,12 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
                 best_model_wts = copy.deepcopy(model.state_dict())
 
         # save model.pth - dictionary (best_model_wts)
-        torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'resnet_model.pth'))
-        print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'resnet_model.pth')))
+        if pretrained == True:
+            torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'resnet_model.pth'))
+            print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'resnet_model.pth')))
+        else:
+            torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'vgg_model.pth'))
+            print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'vgg_model.pth')))
 
     time_elapsed = time.time() - since
     print('Time taken to complete training: {:0f}m {:0f}s'.format(time_elapsed // 60, time_elapsed % 60))
@@ -137,7 +141,7 @@ if __name__=='__main__':
             model = MyVgg11(class_num=classes)
         
         criterion = nn.CrossEntropyLoss()
-        optimizer = torch.optim.SGD(model.parameters(), lr=Config['learning_rate'], momentum=0.9)
+        optimizer = torch.optim.Adam(model.parameters(), lr=Config['learning_rate'], momentum=0.9)
         device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')        
 
         train_model(dataloaders, model, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size, pretrained=Config['pretrained'])
