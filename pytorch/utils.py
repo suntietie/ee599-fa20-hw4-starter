@@ -21,5 +21,5 @@ Config['learning_rate'] = 0.001
 Config['num_workers'] = 5
 
 # user-defined model
-Config['pretrained'] = True
+Config['pretrained'] = False
 Config['BATCH_NORMALIZATION_BEFORE_ACTIVATION'] = True

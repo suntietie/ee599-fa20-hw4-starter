@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 
 class MiniVggBnBefore(nn.Module):
-    def __init__(self):
+    def __init__(self, class_num):
         super(MiniVggBnBefore, self).__init__()
         # first: CONV => RELU => CONV => RELU => POOL set
         self.conv1_1 = nn.Conv2d(3, 64, 3, padding = 1)
@@ -75,10 +75,15 @@ class MiniVggBnBefore(nn.Module):
         self.normfc_2 = nn.BatchNorm1d(4096)    
         self.dropoutfc_2 = nn.Dropout2d(0.50)        
         
-        self.fc3 = nn.Linear(4096, 153)
+        self.fc3 = nn.Linear(4096, 1000)
+        self.normfc_3 = nn.BatchNorm1d(1000)    
+        self.dropoutfc_3 = nn.Dropout2d(0.50)        
+
+        self.fc4 = nn.Linear(1000, class_num)
+    
 
     def forward(self, x):  
-              
+
         out = F.relu(self.norm1_1(self.conv1_1(x)))
         out = F.relu(self.norm1_2(self.conv1_2(out)))
         out = self.pool1(out)
@@ -117,15 +122,18 @@ class MiniVggBnBefore(nn.Module):
         out = F.relu(self.normfc_2(self.fc2(out)))
         out = self.dropoutfc_2(out)
 
-        out = self.fc3(out)
+        out = F.relu(self.normfc_3(self.fc3(out)))
+        out = self.dropoutfc_3(out)
 
+        out = self.fc4(out)
         # softmax classifier
+        out = F.softmax(out)
         
         return out
     
     
 class MiniVggBnAfter(nn.Module):
-    def __init__(self):
+    def __init__(self, class_num):
         super(MiniVggBnAfter, self).__init__()
         
         # first: CONV => RELU => CONV => RELU => POOL set
@@ -183,7 +191,11 @@ class MiniVggBnAfter(nn.Module):
         self.normfc_2 = nn.BatchNorm1d(4096)    
         self.dropoutfc_2 = nn.Dropout2d(0.50)        
         
-        self.fc3 = nn.Linear(4096, 153)
+        self.fc3 = nn.Linear(4096, 1000)
+        self.normfc_3 = nn.BatchNorm1d(1000)    
+        self.dropoutfc_3 = nn.Dropout2d(0.50)        
+
+        self.fc4 = nn.Linear(1000, class_num)
 
     def forward(self, x):        
         out = F.relu(self.norm1_1(self.conv1_1(x)))

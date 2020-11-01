@@ -135,9 +135,9 @@ if __name__=='__main__':
     else:
 
         if Config['BATCH_NORMALIZATION_BEFORE_ACTIVATION']:
-            model = MiniVggBnBefore()
+            model = MiniVggBnBefore(classes)
         else:    
-            model = MiniVggBnAfter()
+            model = MiniVggBnAfter(classes)
         
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.RMSprop(model.parameters(), lr=Config['learning_rate'])
