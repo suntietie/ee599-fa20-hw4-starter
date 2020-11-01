@@ -5,4 +5,3 @@ sudo chmod 777 polyvore_outfits
 
 source activate pytorch_latest_p36
 
-cd /home/ec2_user/
