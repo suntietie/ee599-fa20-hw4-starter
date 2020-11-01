@@ -22,4 +22,4 @@ Config['num_workers'] = 5
 
 # user-defined model
 Config['pretrained'] = False
-Config['VGG16'] = True
+Config['VGG16'] = False

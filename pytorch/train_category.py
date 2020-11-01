@@ -67,12 +67,9 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
                         loss.backward()
                         optimizer.step()
 
-                if pretrained == True:
-                    running_loss += loss.item() * inputs.size(0)
-                    running_corrects += torch.sum(pred==labels.data)
-                else:
-                    running_loss += loss.data
-                    running_corrects += torch.sum(torch.eq(torch.argmax(outputs, axis=1), labels).long())
+                running_loss += loss.item() * inputs.size(0)
+                running_corrects += torch.sum(pred==labels.data)
+
 
             epoch_loss = running_loss / dataset_size[phase]
             epoch_acc = running_corrects.double() / dataset_size[phase]
@@ -90,19 +87,15 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
                 best_model_wts = copy.deepcopy(model.state_dict())
 
         # save model.pth - dictionary (best_model_wts)
-        if pretrained == True:
-            torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'resnet_model.pth'))
-            print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'resnet_model.pth')))
-        else:
-            torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'vgg_model.pth'))
-            print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'vgg_model.pth')))    
+        torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'resnet_model.pth'))
+        print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'resnet_model.pth')))
 
     time_elapsed = time.time() - since
     print('Time taken to complete training: {:0f}m {:0f}s'.format(time_elapsed // 60, time_elapsed % 60))
     print('Best acc: {:.4f}'.format(best_acc))
 
 
-# def train_own_model(dataloader, model, )
+# def train_own_model(dataloader, model, criterion, optimizer, device, num_epochs, dataset_size, pretrained)
 
 
 if __name__=='__main__':
