@@ -137,8 +137,8 @@ if __name__=='__main__':
             model = MyVgg11(class_num=classes)
         
         criterion = nn.CrossEntropyLoss()
-        optimizer = optim.RMSprop(model.parameters(), lr=Config['learning_rate'])
+        optimizer = torch.optim.SGD(model.parameters(), lr=Config['learning_rate'], momentum=0.9)
         device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')        
 
         train_model(dataloaders, model, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size, pretrained=Config['pretrained'])
-        plot(acc_train_list, acc_test_list, "vgg16.jpg", num_epochs=Config['num_epochs'])   
+        plot(acc_train_list, acc_test_list, "vgg.jpg", num_epochs=Config['num_epochs'])   
