@@ -10,7 +10,7 @@ from tqdm import tqdm
 import os.path as osp
 
 from utils import Config
-from model import model
+from model import model_pretrained, MiniVggBnBefore, MiniVggBnAfter 
 from data import get_dataloader
 import sys
 import matplotlib.pyplot as plt
@@ -33,7 +33,7 @@ def plot(x_list, y_list, fname, num_epochs=Config['num_epochs']):
     return 
 
 
-def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dataset_size):
+def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dataset_size, pretrained):
 
     model.to(device)
     since = time.time()
@@ -59,7 +59,6 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
                 optimizer.zero_grad()
 
                 with torch.set_grad_enabled(phase=='train'):
-                    # use pretrained model - ResNet
                     outputs = model(inputs)
                     _, pred = torch.max(outputs, 1)
                     loss = criterion(outputs, labels)
@@ -87,31 +86,62 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
                 best_model_wts = copy.deepcopy(model.state_dict())
 
         # save model.pth - dictionary (best_model_wts)
-        torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'model.pth'))
-        print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'model.pth')))
+        if pretrained == True:
+            torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'resnet_model.pth'))
+            print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'resnet_model.pth')))
+        else:
+            torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'vgg_model.pth'))
+            print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'vgg_model.pth')))    
 
     time_elapsed = time.time() - since
     print('Time taken to complete training: {:0f}m {:0f}s'.format(time_elapsed // 60, time_elapsed % 60))
     print('Best acc: {:.4f}'.format(best_acc))
 
 
+# def train_own_model(dataloader, model, )
 
 
 if __name__=='__main__':
 
+    '''Hyper parameters of the dataset:
+
+    dataiter = iter(dataloaders["train"])
+    images, labels = dataiter.next()
+    >>> images.shape
+    torch.Size([64, 3, 224, 224])
+    >>> labels.shape
+    torch.Size([64])
+    >>> classes
+    153
+    '''
+
+    
     dataloaders, classes, dataset_size = get_dataloader(debug=Config['debug'], batch_size=Config['batch_size'], num_workers=Config['num_workers'])
-    num_ftrs = model.fc.in_features
-    model.fc = nn.Linear(num_ftrs, classes)
-
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.RMSprop(model.parameters(), lr=Config['learning_rate'])
-    device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')
-
     # acc_list - global variables
     acc_train_list = []
     acc_test_list = []
 
-    train_model(dataloaders, model, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size)
+    if Config['pretrained'] == True:
+        num_ftrs = model_pretrained.fc.in_features
+        model_pretrained.fc = nn.Linear(num_ftrs, classes)
 
-    plot(acc_train_list, acc_test_list, "pretrained.jpg", num_epochs=Config['num_epochs'])
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.RMSprop(model_pretrained.parameters(), lr=Config['learning_rate'])
+        device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')
 
+        train_model(dataloaders, model_pretrained, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size, pretrained=Config['pretrained'])
+        plot(acc_train_list, acc_test_list, "pretrained.jpg", num_epochs=Config['num_epochs'])
+    
+    else:
+
+        if Config['BATCH_NORMALIZATION_BEFORE_ACTIVATION']:
+            model = MiniVggBnBefore()
+        else:    
+            model = MiniVggBnAfter()
+        
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.RMSprop(model.parameters(), lr=Config['learning_rate'])
+        device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')        
+
+        train_model(dataloaders, model, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size, pretrained=Config['pretrained'])
+        plot(acc_train_list, acc_test_list, "vgg16.jpg", num_epochs=Config['num_epochs'])   
