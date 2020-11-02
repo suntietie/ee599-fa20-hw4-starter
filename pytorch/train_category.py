@@ -58,6 +58,9 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
                 labels = labels.to(device)
                 optimizer.zero_grad()
 
+                # only work on the lr_scheduler
+                scheduler = optim.lr_scheduler.StepLR(optimizer, step_size = 5, gamma=0.5)
+
                 with torch.set_grad_enabled(phase=='train'):
                     outputs = model(inputs)
                     _, pred = torch.max(outputs, 1)
@@ -65,7 +68,10 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
 
                     if phase=='train':
                         loss.backward()
+
                         optimizer.step()
+                        if pretrained == False:
+                            scheduler.step()
 
                 running_loss += loss.item() * inputs.size(0)
                 running_corrects += torch.sum(pred==labels.data)

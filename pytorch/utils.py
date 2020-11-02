@@ -6,8 +6,8 @@ import argparse
 
 parse = argparse.ArgumentParser(description="run on AWS or PC")
 Config ={}
-# Config['root_path'] = '/Users/tieming/code/dataset/polyvore_outfits'
-Config['root_path'] = '/mnt/polyvore_outfits'
+Config['root_path'] = '/Users/tieming/code/dataset/polyvore_outfits'
+#Config['root_path'] = '/mnt/polyvore_outfits'
 Config['meta_file'] = 'polyvore_item_metadata.json'
 Config['checkpoint_path'] = ''
 
@@ -17,9 +17,9 @@ Config['debug'] = False
 Config['num_epochs'] = 20
 Config['batch_size'] = 64
 
-Config['learning_rate'] = 0.001
+Config['learning_rate'] = 0.01
 Config['num_workers'] = 5
 
 # user-defined model
-Config['pretrained'] = True
+Config['pretrained'] = False
 Config['VGG16'] = False
