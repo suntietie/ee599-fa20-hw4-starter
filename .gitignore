@@ -3,3 +3,4 @@ __pycache__
 env/
 EE599-CV-Project-latex.zip
 .ipynb_checkpoints
+*.jpg
