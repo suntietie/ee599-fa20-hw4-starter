@@ -137,63 +137,54 @@ class MyVgg11(nn.Module):
         super(MyVgg11, self).__init__()
         
         # first: CONV => RELU => CONV => RELU => POOL set
-        self.conv1_1 = nn.Conv2d(3, 64, 3, padding = 1)
-        self.norm1_1 = nn.BatchNorm2d(64)
-    
+        self.conv1_1 = nn.Conv2d(3, 32, 3, padding = 1)
+        self.norm1_1 = nn.BatchNorm2d(32)
         self.pool1 = nn.MaxPool2d(kernel_size=2)
-        self.dropout1 = nn.Dropout2d(0.25)
+        self.dropout1 = nn.Dropout2d(0.2)
         
         # second: CONV => RELU => CONV => RELU => POOL set
-        self.conv2_1 = nn.Conv2d(64, 128, 3, padding = 1)
-        self.norm2_1 = nn.BatchNorm2d(128)
+        self.conv2_1 = nn.Conv2d(32, 64, 3, padding = 1)
+        self.norm2_1 = nn.BatchNorm2d(64)
     
         self.pool2 = nn.MaxPool2d(kernel_size=2)
-        self.dropout2 = nn.Dropout2d(0.25)
+        self.dropout2 = nn.Dropout2d(0.2)
 
         # third: CONV => RELU => CONV => RELU => CONV => RELU => POOL set
-        self.conv3_1 = nn.Conv2d(128, 256, 3, padding = 1)
-        self.norm3_1 = nn.BatchNorm2d(256)
+        self.conv3_1 = nn.Conv2d(64, 128, 3, padding = 1)
+        self.norm3_1 = nn.BatchNorm2d(128)
     
-        self.conv3_2 = nn.Conv2d(256, 256, 3, padding = 1)
-        self.norm3_2 = nn.BatchNorm2d(256)
+        self.conv3_2 = nn.Conv2d(128, 128, 3, padding = 1)
+        self.norm3_2 = nn.BatchNorm2d(128)
 
         self.pool3 = nn.MaxPool2d(kernel_size=2)
-        self.dropout3 = nn.Dropout2d(0.25)  
+        self.dropout3 = nn.Dropout2d(0.2)  
 
         # forth: CONV => RELU => CONV => RELU => CONV => RELU => POOL set
-        self.conv4_1 = nn.Conv2d(256, 512, 3, padding = 1)
-        self.norm4_1 = nn.BatchNorm2d(512)
-    
-        self.conv4_2 = nn.Conv2d(512, 512, 3, padding = 1)
-        self.norm4_2 = nn.BatchNorm2d(512)
-
+        self.conv4_1 = nn.Conv2d(128, 256, 3, padding = 1)
+        self.norm4_1 = nn.BatchNorm2d(256)
+        self.conv4_2 = nn.Conv2d(256, 256, 3, padding = 1)
+        self.norm4_2 = nn.BatchNorm2d(256)
         self.pool4 = nn.MaxPool2d(kernel_size=2)
-        self.dropout4 = nn.Dropout2d(0.25)   
+        self.dropout4 = nn.Dropout2d(0.3)   
 
         # fifth: CONV => RELU => CONV => RELU => CONV => RELU => POOL set
-        self.conv5_1 = nn.Conv2d(512, 512, 3, padding = 1)
+        self.conv5_1 = nn.Conv2d(256, 512, 3, padding = 1)
         self.norm5_1 = nn.BatchNorm2d(512)
-    
         self.conv5_2 = nn.Conv2d(512, 512, 3, padding = 1)
         self.norm5_2 = nn.BatchNorm2d(512)
-
         self.pool5 = nn.MaxPool2d(kernel_size=2)
-        self.dropout5 = nn.Dropout2d(0.25)   
+        self.dropout5 = nn.Dropout2d(0.3)   
 
         # fully connected (single) to RELU
         self.fc1 = nn.Linear(512 * 7 * 7, 4096)
         self.normfc_1 = nn.BatchNorm1d(4096)    
-        self.dropoutfc_1 = nn.Dropout2d(0.50)
-        
-        self.fc2 = nn.Linear(4096, 4096)
-        self.normfc_2 = nn.BatchNorm1d(4096)    
-        self.dropoutfc_2 = nn.Dropout2d(0.50)        
-        
-        self.fc3 = nn.Linear(4096, 1000)
-        self.normfc_3 = nn.BatchNorm1d(1000)    
-        self.dropoutfc_3 = nn.Dropout2d(0.50)        
+        self.dropoutfc_1 = nn.Dropout2d(0.4)
+          
+        self.fc2 = nn.Linear(4096, 1000)
+        self.normfc_2 = nn.BatchNorm1d(1000)    
+        self.dropoutfc_2 = nn.Dropout2d(0.2)        
 
-        self.fc4 = nn.Linear(1000, class_num)
+        self.fc3 = nn.Linear(1000, class_num)
 
     def forward(self, x):        
         out = F.relu(self.norm1_1(self.conv1_1(x)))
@@ -227,10 +218,8 @@ class MyVgg11(nn.Module):
         out = F.relu(self.normfc_2(self.fc2(out)))
         out = self.dropoutfc_2(out)
 
-        out = F.relu(self.normfc_3(self.fc3(out)))
-        out = self.dropoutfc_3(out)
 
-        out = self.fc4(out)
+        out = self.fc3(out)
         # softmax classifier
         # print(out.shape)
         out = F.softmax(out, dim=1)
