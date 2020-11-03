@@ -275,7 +275,7 @@ cfg = {
 
 
 def vgg16(**kwargs):
-    model = VGG(make_layers(cfg['D']), **kwargs)
+    model = VGG(make_layers(cfg['D'], batch_norm=True), **kwargs)
     return model
 
 net16 = vgg16()
