@@ -142,9 +142,9 @@ if __name__=='__main__':
     else:
 
         if Config['VGG16']:
-            model = MiniVggBnBefore(class_num=classes)
-        else:    
             model = net16
+        else:    
+            model = MyVgg11(class_num=classes)
         
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=Config['learning_rate'], weight_decay=0.0001)
