@@ -10,7 +10,7 @@ from tqdm import tqdm
 import os.path as osp
 
 from utils import Config
-from model import model_pretrained, MiniVggBnBefore, MyVgg11 
+from model import model_pretrained, MiniVggBnBefore, MyVgg11, net16
 from data import get_dataloader
 import sys
 import matplotlib.pyplot as plt
@@ -144,7 +144,7 @@ if __name__=='__main__':
         if Config['VGG16']:
             model = MiniVggBnBefore(class_num=classes)
         else:    
-            model = MyVgg11(class_num=classes)
+            model = net16
         
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=Config['learning_rate'], weight_decay=0.0001)
