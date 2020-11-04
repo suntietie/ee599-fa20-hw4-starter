@@ -148,6 +148,7 @@ class polyvore_test_write(Dataset):
         file_path = osp.join(self.image_dir, self.X_test[item])
         return self.X_test, self.transform(Image.open(file_path)), self.y_test[item]
 
+
 def get_dataloader(debug, batch_size, num_workers):
     dataset = polyvore_dataset()
     transforms = dataset.get_data_transforms()
