@@ -132,7 +132,21 @@ class polyvore_test(Dataset):
         return self.transform(Image.open(file_path)), self.y_test[item]
 
 
+class polyvore_test_write(Dataset):
+    def __init__(self, X_test, y_test, transform):
+        self.X_test = X_test
+        self.y_test = y_test
+        self.transform = transform
+        self.image_dir = osp.join(Config['root_path'], 'images')
 
+
+    def __len__(self):
+        return len(self.X_test)
+
+
+    def __getitem__(self, item):
+        file_path = osp.join(self.image_dir, self.X_test[item])
+        return self.X_test, self.transform(Image.open(file_path)), self.y_test[item]
 
 def get_dataloader(debug, batch_size, num_workers):
     dataset = polyvore_dataset()

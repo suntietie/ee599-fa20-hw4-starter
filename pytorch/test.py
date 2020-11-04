@@ -1,16 +1,13 @@
 import torch
-import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import transforms
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from model import model_pretrained, MiniVggBnBefore, MyVgg11, net16
-from data import get_dataloader, polyvore_test, polyvore_dataset
+from model import model_pretrained, net16
+from data import polyvore_test_write
 import os
-import numpy as np
 import os.path as osp
 import json
 from tqdm import tqdm
@@ -44,9 +41,9 @@ else:
 
 model.eval()
 X_test, y_test = dataset.create_testset()
-test_dataset = polyvore_test(X_test, y_test, transforms['test'])
-dataloader = DataLoader(test_dataset, shuffle=False,batch_size=len(X_test))
-for i, inputs, labels in tqdm(enumerate(dataloader)):
+test_dataset = polyvore_test_write(X_test, y_test, transforms['test'])
+dataloader = DataLoader(test_dataset, shuffle=False)
+for input_name, inputs, labels in tqdm(dataloader):
     inputs = inputs.to(device)
     labels = labels.to(device)
 
@@ -54,7 +51,7 @@ for i, inputs, labels in tqdm(enumerate(dataloader)):
     _, pred = torch.max(outputs, 1)
 
     line = ""
-    line = str(X_test[i]) +'  '+ str(pred) +'  '+ str(labels) + '\n'
+    line = str(input_name) +' '+ str(pred) +' '+ str(labels) + '\n'
     test_output.writeline(line)
 
 test_output.close()
