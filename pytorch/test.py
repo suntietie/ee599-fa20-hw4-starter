@@ -34,11 +34,11 @@ if resnet == True:
     num_ftrs = model_pretrained.fc.in_features
     model.fc = nn.Linear(num_ftrs, 153)
 
-    model.load_state_dict(torch.load(Config['resnet_pth']))
+    model.load_state_dict(torch.load(osp.join(Config['root_path'], Config['resnet_pth'])))
     model.to(device)
 else:
     model = net16
-    model.load_state_dict(torch.load(Config['vgg_pth']))
+    model.load_state_dict(torch.load(osp.join(Config['root_path'], Config['vgg_pth'])))
 
 
 

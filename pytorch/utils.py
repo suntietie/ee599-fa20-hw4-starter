@@ -22,8 +22,8 @@ Config['train_json'] = 'train.json'
 Config['valid_json'] = 'valid.json'
 Config['test_json'] = '../test.json'
 
-Config['resnet_pth'] = '../resnet_model.pth'
-Config['vgg_pth'] = '../vgg_model.pth'
+Config['resnet_pth'] = 'resnet_model.pth'
+Config['vgg_pth'] = 'vgg_model.pth'
 
 
 Config['use_cuda'] = True
