@@ -146,7 +146,7 @@ class polyvore_test_write(Dataset):
 
     def __getitem__(self, item):
         file_path = osp.join(self.image_dir, self.X_test[item])
-        return self.X_test, self.transform(Image.open(file_path)), self.y_test[item]
+        return self.X_test[item], self.transform(Image.open(file_path)), self.y_test[item]
 
 
 def get_dataloader(debug, batch_size, num_workers):
