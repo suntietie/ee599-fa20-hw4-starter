@@ -24,7 +24,7 @@ class polyvore_dataset:
         self.image_dir = osp.join(self.root_dir, 'images')
         self.transforms = self.get_data_transforms()
         # self.X_train, self.X_test, self.y_train, self.y_test, self.classes = self.create_dataset()
-
+        self.test_dir = Config['test_category']
 
 
     def get_data_transforms(self):
@@ -68,6 +68,33 @@ class polyvore_dataset:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
         return X_train, X_test, y_train, y_test, max(y) + 1
 
+
+    def create_testset(self):
+
+        meta_file = open(osp.join(self.root_dir, Config['meta_file']), 'r')
+        meta_json = json.load(meta_file)
+        id_to_category = {}
+        for k, v in meta_json.items():
+            id_to_category[k] = v['category_id'] 
+         
+        # add test file 
+        test_file = open(osp.join(self.root_dir, self.test_dir), 'r')
+        test_list = []
+        for line in test_file.readlines():
+            line = line.strip()
+            test_list.append(line)
+        # create X, y pairs
+        files_list = os.listdir(self.image_dir)
+        files_set = set(map(lambda x: x[:-4], files_list))
+        X = []; y = []
+        for x in test_list:
+            if x in files_set and x in id_to_category:
+                X.append(x+".jpg")
+                y.append(int(id_to_category[x]))
+        y = LabelEncoder().fit_transform(y)
+        print('len of test set X: {}, # of categories: {}'.format(len(X), max(y) + 1))
+        
+        return X, y
 
 
 # For category classification
@@ -135,3 +162,10 @@ def get_dataloader(debug, batch_size, num_workers):
 ########################################################################
 # For Pairwise Compatibility Classification
 
+# class polyvore_pairset:
+#     def __init__(self):
+#         self.root_dir = Config['root_path']
+#         self.image_dir = osp.join(self.root_dir, 'images')
+#         self.transforms = self.get_data_transforms()
+
+#     def get_data_transforms()

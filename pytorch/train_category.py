@@ -151,4 +151,6 @@ if __name__=='__main__':
         device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')        
 
         train_model(dataloaders, model, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size, pretrained=Config['pretrained'])
-        plot(acc_train_list, acc_test_list, "vgg.jpg", num_epochs=Config['num_epochs'])   
+        plot(acc_train_list, acc_test_list, "vgg.jpg", num_epochs=Config['num_epochs'])  
+
+ 
