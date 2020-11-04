@@ -1,17 +1,14 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torchvision import transforms
 from torch.utils.data import DataLoader
 
-from sklearn.preprocessing import LabelEncoder
 from model import model_pretrained, net16
 from data import polyvore_test_write, polyvore_dataset
 import os
 import os.path as osp
 import json
 from tqdm import tqdm
-from PIL import Image
 
 from utils import Config
 
@@ -49,7 +46,9 @@ with open(osp.join(Config['root_path'], Config['test_category_output']), 'w') as
 
         outputs = model(inputs)
         _, pred = torch.max(outputs, 1)
-
+        print(pred)
+        print(input_name[:-4])
+        print(labels)
         line = ""
         line = str(input_name) +' '+ str(pred) +' '+ str(labels) + '\n'
         test_output.write(line)

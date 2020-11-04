@@ -20,11 +20,13 @@ Config['compa_valid'] = 'compatibility_valid.txt'
 Config['compa_test'] = 'compatibility_test_hw.txt'
 Config['train_json'] = 'train.json'
 Config['valid_json'] = 'valid.json'
+Config['test_pairwise_compat'] = 'test_pairwise_compat_hw.txt'
+
+# found in github
 Config['test_json'] = '../test.json'
 
 Config['resnet_pth'] = 'resnet_model.pth'
 Config['vgg_pth'] = 'vgg_model.pth'
-
 
 Config['use_cuda'] = True
 Config['debug'] = False

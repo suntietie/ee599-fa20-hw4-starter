@@ -281,3 +281,7 @@ def vgg16(**kwargs):
 net16 = vgg16()
 
 model_pretrained = resnet50(pretrained=True)
+
+
+
+##################### model for pairwise detection #####################
