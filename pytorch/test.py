@@ -46,11 +46,9 @@ with open(osp.join(Config['root_path'], Config['test_category_output']), 'w') as
 
         outputs = model(inputs)
         _, pred = torch.max(outputs, 1)
-        print(pred)
-        print(input_name[:-4])
-        print(labels)
+
         line = ""
-        line = str(input_name) +' '+ str(pred) +' '+ str(labels) + '\n'
+        line = str(input_name[0][:-4]) +' '+ str(pred[0]) +' '+ str(labels[0]) + '\n'
         test_output.write(line)
 
 
