@@ -35,7 +35,7 @@ Config['vgg_pth'] = 'vgg_model.pth'
 
 Config['use_cuda'] = True
 Config['debug'] = True
-Config['num_epochs'] = 20
+Config['num_epochs'] = 10
 Config['batch_size'] = 64
 
 Config['learning_rate'] = 0.002
@@ -45,5 +45,3 @@ Config['num_workers'] = 5
 Config['pretrained'] = False
 Config['VGG16'] = False
 
-# use pairwise
-Config['pairwise'] = False

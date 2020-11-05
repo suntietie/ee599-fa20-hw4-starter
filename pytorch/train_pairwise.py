@@ -19,7 +19,7 @@ import numpy as np
 
 def plot(x_list, y_list, fname, num_epochs=Config['num_epochs']):
     l = [i for i in range(1, len(x_list)+1)]
-    new_ticks=np.linspace(0,num_epochs,5)
+    new_ticks=np.linspace(0,num_epochs,3)
     plt.plot(l, x_list,label="Training set")
     plt.plot(l, y_list,label="Test set")
 
