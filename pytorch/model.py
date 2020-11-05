@@ -1,4 +1,4 @@
-from torchvision.models import resnet50, mobilenet
+from torchvision.models import resnet50, mobilenet_v2
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -180,4 +180,4 @@ def vgg_pair(**kwargs):
     model = VGG(make_layers(cfg['A'],initial=6,batch_norm=True),pairwise=True)
     return model
 net16_pair = vgg_pair()
-mobile = mobilenet()
+mobile = mobilenet_v2(pretrained=True)
