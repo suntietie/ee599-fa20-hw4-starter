@@ -59,7 +59,7 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
                 labels = torch.Tensor(labels_temp.astype('long'))
                 inputs = inputs.to(device)
                 labels = labels.to(device)
-                # labels = labels.view(-1, 1)
+                labels = labels.view(-1, 1)
                 optimizer.zero_grad()
 
                 # only work on the lr_scheduler
