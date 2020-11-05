@@ -6,8 +6,8 @@ import argparse
 
 parse = argparse.ArgumentParser(description="run on AWS or PC")
 Config ={}
-# Config['root_path'] = '/Users/tieming/code/dataset/polyvore_outfits'
-Config['root_path'] = '/mnt/polyvore_outfits'
+Config['root_path'] = '/Users/tieming/code/dataset/polyvore_outfits'
+# Config['root_path'] = '/mnt/polyvore_outfits'
 
 Config['meta_file'] = 'polyvore_item_metadata.json'
 Config['checkpoint_path'] = ''
@@ -18,6 +18,11 @@ Config['test_category_output'] = 'test_category_predict.txt'
 Config['compa_train'] = 'compatibility_train.txt'
 Config['compa_valid'] = 'compatibility_valid.txt'
 Config['compa_test'] = 'compatibility_test_hw.txt'
+
+Config['pair_train'] = 'pairwise_compatibility_train.txt'
+Config['pair_valid'] = 'pairwise_compatibility_valid.txt'
+Config['pair_test'] = 'test_pairwise_compat_hw.txt'
+
 Config['train_json'] = 'train.json'
 Config['valid_json'] = 'valid.json'
 Config['test_pairwise_compat'] = 'test_pairwise_compat_hw.txt'
@@ -39,3 +44,6 @@ Config['num_workers'] = 5
 # user-defined model
 Config['pretrained'] = False
 Config['VGG16'] = False
+
+# use pairwise
+Config['pairwise'] = False

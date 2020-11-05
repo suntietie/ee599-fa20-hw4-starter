@@ -11,7 +11,7 @@ import os.path as osp
 
 from utils import Config
 from model import model_pretrained, MyVgg11, net16, net16_pair
-from data import get_dataloader
+from data import get_pairloader
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
@@ -33,7 +33,7 @@ def plot(x_list, y_list, fname, num_epochs=Config['num_epochs']):
     return 
 
 
-def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dataset_size, pretrained):
+def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dataset_size):
 
     model.to(device)
     since = time.time()
@@ -54,8 +54,12 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
             running_corrects = 0
 
             for inputs, labels in tqdm(dataloaders[phase]):
+
+                labels_temp = np.array(labels)
+                labels = torch.Tensor(labels_temp.astype('long'))
                 inputs = inputs.to(device)
                 labels = labels.to(device)
+                # labels = labels.view(-1, 1)
                 optimizer.zero_grad()
 
                 # only work on the lr_scheduler
@@ -63,17 +67,17 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
 
                 with torch.set_grad_enabled(phase=='train'):
                     outputs = model(inputs)
-                    _, pred = torch.max(outputs, 1)
                     loss = criterion(outputs, labels)
 
                     if phase=='train':
                         loss.backward()
-
                         optimizer.step()
-                        if pretrained == False:
-                            scheduler.step()
+                        scheduler.step()
 
                 running_loss += loss.item() * inputs.size(0)
+                pred = outputs
+                pred[pred >= 0.5] = 1.0
+                pred[pred <= 0.5] = 0.0
                 running_corrects += torch.sum(pred==labels.data)
 
 
@@ -93,12 +97,8 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
                 best_model_wts = copy.deepcopy(model.state_dict())
 
         # save model.pth - dictionary (best_model_wts)
-        if pretrained == True:
-            torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'resnet_model.pth'))
-            print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'resnet_model.pth')))
-        else:
-            torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'vgg_model.pth'))
-            print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'vgg_model.pth')))
+        torch.save(best_model_wts, osp.join(Config['root_path'], Config['checkpoint_path'], 'pairwise_model.pth'))
+        print('Model saved at: {}'.format(osp.join(Config['root_path'], Config['checkpoint_path'], 'pairwise_model.pth')))
 
     time_elapsed = time.time() - since
     print('Time taken to complete training: {:0f}m {:0f}s'.format(time_elapsed // 60, time_elapsed % 60))
@@ -121,34 +121,17 @@ if __name__=='__main__':
     '''
 
     
-    dataloaders, classes, dataset_size = get_dataloader(debug=Config['debug'], batch_size=Config['batch_size'], num_workers=Config['num_workers'])
+    dataloaders, classes, dataset_size = get_pairloader(debug=Config['debug'], batch_size=Config['batch_size'], num_workers=Config['num_workers'])
     # acc_list - global variables
     acc_train_list = []
     acc_test_list = []
 
 
-        if Config['pretrained'] == True:
-            num_ftrs = model_pretrained.fc.in_features
-            model_pretrained.fc = nn.Linear(num_ftrs, classes)
-
-            criterion = nn.CrossEntropyLoss()
-            optimizer = optim.RMSprop(model_pretrained.parameters(), lr=Config['learning_rate'])
-            device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')
-
-            train_model(dataloaders, model_pretrained, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size, pretrained=Config['pretrained'])
-            plot(acc_train_list, acc_test_list, "pretrained.jpg", num_epochs=Config['num_epochs'])
+    model = net16
         
-        else:
+    criterion = nn.BCELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=Config['learning_rate'], weight_decay=0.0001)
+    device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')        
 
-            if Config['VGG16']:
-                model = net16
-            else:    
-                model = MyVgg11(class_num=classes)
-            
-            criterion = nn.CrossEntropyLoss()
-            optimizer = torch.optim.Adam(model.parameters(), lr=Config['learning_rate'], weight_decay=0.0001)
-            device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')        
-
-            train_model(dataloaders, model, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size, pretrained=Config['pretrained'])
-            plot(acc_train_list, acc_test_list, "vgg.jpg", num_epochs=Config['num_epochs'])  
-
+    train_model(dataloaders, model, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size)
+    plot(acc_train_list, acc_test_list, "pairwise.jpg", num_epochs=Config['num_epochs'])  

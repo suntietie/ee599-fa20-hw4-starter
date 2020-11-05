@@ -99,6 +99,7 @@ class polyvore_dataset:
 
 # For category classification
 class polyvore_train(Dataset):
+
     def __init__(self, X_train, y_train, transform):
         self.X_train = X_train
         self.y_train = y_train
@@ -177,10 +178,110 @@ def get_dataloader(debug, batch_size, num_workers):
 ########################################################################
 # For Pairwise Compatibility Classification
 
-# class polyvore_pairset:
-#     def __init__(self):
-#         self.root_dir = Config['root_path']
-#         self.image_dir = osp.join(self.root_dir, 'images')
-#         self.transforms = self.get_data_transforms()
+class polyvore_pairset:
 
-#     def get_data_transforms()
+    def __init__(self):
+        self.root_dir = Config['root_path']
+        self.image_dir = osp.join(self.root_dir, 'images')
+        self.transforms = self.get_data_transforms()
+        # self.pair_train = Config['pair_train']
+        # self.pair_valid = Config['pair_valid']
+
+    def get_data_transforms(self):
+        data_transforms = {
+            'train': transforms.Compose([
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
+            ]),
+            'test': transforms.Compose([
+                transforms.Resize(256),
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
+            ]),
+        }
+        return data_transforms
+
+    def create_dataset(self, pair_set):
+        pair_list = []; pair_label = []
+        with open(osp.join(self.root_dir, pair_set), 'r') as pair_open:
+            line = pair_open.readline()
+            temp_list = line.strip().split(" ")
+            pair_list.append([temp_list[1], temp_list[2]])
+            pair_label.append(temp_list[0])
+
+        # create X, y pairs
+        files_list = os.listdir(self.image_dir)
+        files_set = set(map(lambda x: x[:-4], files_list))
+        X = []; y = []
+        for i in range(len(pair_list)):
+            if pair_list[i][0] in files_set and pair_list[i][1] in files_set:
+                    X.append([pair_list[i][0]+".jpg", pair_list[i][1]+".jpg"])
+                    y.append(pair_label[i])
+        print('len of test set X: {}'.format(len(X)))
+
+        return X, y
+
+    def create_testset(self):
+        # pairs without label
+        pair_list = []
+        with open(osp.join(self.root_dir, Config['pair_test']), 'r') as pair_open:
+            line = pair_open.readline()
+            temp_list = line.strip().split(" ")
+            pair_list.append([temp_list[1], temp_list[2]])
+
+        # create X pairs
+        files_list = os.listdir(self.image_dir)
+        files_set = set(map(lambda x: x[:-4], files_list))
+        X = []
+        for i in range(len(pair_list)):
+            if pair_list[i][0] in files_set and pair_list[i][1] in files_set:
+                    X.append([pair_list[i][0]+".jpg", pair_list[i][1]+".jpg"])
+
+        print('len of test set X: {}'.format(len(X)))
+
+        return X
+
+
+# For pairset determination
+class polyvore_pair_train(Dataset):
+
+    def __init__(self, X_train, y_train, transform):
+        self.X_train = X_train
+        self.y_train = y_train
+        self.transform = transform
+        self.image_dir = osp.join(Config['root_path'], 'images')
+
+    def __len__(self):
+        return len(self.X_train)
+
+    def __getitem__(self, item):
+        file_path1 = osp.join(self.image_dir, self.X_train[item][0])
+        file_path2 = osp.join(self.image_dir, self.X_train[item][0])
+        new_X = torch.cat((self.transform(Image.open(file_path1)), self.transform(Image.open(file_path2))), 0)
+        return new_X, self.y_train[item]
+
+
+def get_pairloader(debug, batch_size, num_workers):
+    dataset = polyvore_pairset()
+    transforms = dataset.get_data_transforms()
+    X_train, y_train = dataset.create_dataset(Config['pair_train'])
+    X_valid, y_valid = dataset.create_dataset(Config['pair_valid'])
+    
+    if debug==True:
+        train_set = polyvore_pair_train(X_train[:100], y_train[:100], transform=transforms['train'])
+        test_set = polyvore_pair_train(X_valid[:100], y_valid[:100], transform=transforms['test'])
+        dataset_size = {'train': len(y_train), 'test': len(y_valid)}
+    else:
+        train_set = polyvore_pair_train(X_train, y_train, transform=transforms['train'])
+        test_set = polyvore_pair_train(X_valid, y_valid, transform=transforms['test'])
+        dataset_size = {'train': len(y_train), 'test': len(y_valid)}
+
+    datasets = {'train': train_set, 'test': test_set}
+    dataloaders = {x: DataLoader(datasets[x],
+                                 shuffle=True if x=='train' else False,
+                                 batch_size=batch_size,
+                                 num_workers=num_workers)
+                                 for x in ['train', 'test']}
+    return dataloaders, 1, dataset_size    
