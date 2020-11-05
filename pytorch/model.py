@@ -128,8 +128,6 @@ class VGG(nn.Module):
                 nn.ReLU(True),
                 nn.Dropout(),
                 nn.Linear(1000, 1),
-                nn.ReLU(True),
-                nn.Dropout(),
                 nn.Sigmoid()
             )
 
@@ -179,6 +177,6 @@ model_pretrained = resnet50(pretrained=True)
 ##################### model for pairwise detection #####################
 
 def vgg_pair(**kwargs):
-    model = VGG(make_layers(cfg['A'],initial=6,batch_norm=True),pairwise=True)
+    model = VGG(make_layers(cfg['A'],initial=6,batch_norm=True),pairwise=False)
     return model
 net16_pair = vgg_pair()
