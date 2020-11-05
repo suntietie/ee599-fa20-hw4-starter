@@ -19,7 +19,7 @@ import numpy as np
 
 def plot(x_list, y_list, fname, num_epochs=Config['num_epochs']):
     l = [i for i in range(1, len(x_list)+1)]
-    new_ticks=np.linspace(0,num_epochs,3)
+    new_ticks=np.linspace(0,num_epochs,5)
     plt.plot(l, x_list,label="Training set")
     plt.plot(l, y_list,label="Test set")
 
@@ -89,8 +89,10 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
 
             if phase == 'train':
                 acc_train_list.append(epoch_acc)
+                loss_train_list.append(epoch_loss)
             if phase == 'test':
                 acc_test_list.append(epoch_acc)
+                loss_test_list.append(epoch_loss)
             
             if phase=='test' and epoch_acc > best_acc:
                 best_acc = epoch_acc
@@ -125,7 +127,8 @@ if __name__=='__main__':
     # acc_list - global variables
     acc_train_list = []
     acc_test_list = []
-
+    loss_train_list = []
+    loss_test_list = []
 
     model = net16_pair
         
@@ -135,3 +138,4 @@ if __name__=='__main__':
 
     train_model(dataloaders, model, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size)
     plot(acc_train_list, acc_test_list, "pairwise.jpg", num_epochs=Config['num_epochs'])  
+    plot(loss_train_list, loss_test_list, "pairwise_loss.jpg", num_epochs=Config['num_epochs']) 

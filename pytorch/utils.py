@@ -34,7 +34,7 @@ Config['resnet_pth'] = 'resnet_model.pth'
 Config['vgg_pth'] = 'vgg_model.pth'
 
 Config['use_cuda'] = True
-Config['debug'] = True
+Config['debug'] = False
 Config['num_epochs'] = 10
 Config['batch_size'] = 64
 
