@@ -127,7 +127,7 @@ if __name__=='__main__':
     acc_test_list = []
 
 
-    model = net16
+    model = net16_pair
         
     criterion = nn.BCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=Config['learning_rate'], weight_decay=0.0001)

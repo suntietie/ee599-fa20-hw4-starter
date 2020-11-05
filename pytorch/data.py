@@ -205,12 +205,13 @@ class polyvore_pairset:
 
     def create_dataset(self, pair_set):
         pair_list = []; pair_label = []
-        with open(osp.join(self.root_dir, pair_set), 'r') as pair_open:
-            line = pair_open.readline()
-            temp_list = line.strip().split(" ")
+        pair_open =  open(osp.join(self.root_dir, pair_set), 'r')
+        for p in pair_open:
+            p = p.strip('\n')
+            temp_list = p.split(" ")
             pair_list.append([temp_list[1], temp_list[2]])
             pair_label.append(temp_list[0])
-
+        # print(pair_list)
         # create X, y pairs
         files_list = os.listdir(self.image_dir)
         files_set = set(map(lambda x: x[:-4], files_list))
@@ -219,7 +220,7 @@ class polyvore_pairset:
             if pair_list[i][0] in files_set and pair_list[i][1] in files_set:
                     X.append([pair_list[i][0]+".jpg", pair_list[i][1]+".jpg"])
                     y.append(pair_label[i])
-        print('len of test set X: {}'.format(len(X)))
+        print('len of train set X: {}'.format(len(X)))
 
         return X, y
 
