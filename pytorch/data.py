@@ -280,10 +280,10 @@ def get_pairloader(debug, batch_size, num_workers):
         train_set = polyvore_pair_train(X_train, y_train, transform=transforms['train'])
         test_set = polyvore_pair_train(X_valid, y_valid, transform=transforms['test'])
         dataset_size = {'train': len(y_train), 'test': len(y_valid)}
-        train_indices = torch.randperm(len(train_set))[:200000]
+        # train_indices = torch.randperm(len(train_set))[:200000]
         
         datasets = {'train': train_set, 'test': test_set}
-        datasets['train'] = Subset(train_set, train_indices)
+        # datasets['train'] = Subset(train_set, train_indices)
     
     
     dataloaders = {x: DataLoader(datasets[x],

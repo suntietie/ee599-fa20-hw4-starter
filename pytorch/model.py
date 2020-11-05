@@ -1,4 +1,4 @@
-from torchvision.models import resnet50
+from torchvision.models import resnet50, mobilenet
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -106,7 +106,7 @@ class VGG(nn.Module):
         super(VGG, self).__init__()
         self.features = features
 
-        if pairwise==True:
+        if pairwise==False:
             self.classifier = nn.Sequential(
                 nn.Linear(512 * 7 * 7, 4096),
                 nn.ReLU(True),
@@ -177,6 +177,7 @@ model_pretrained = resnet50(pretrained=True)
 ##################### model for pairwise detection #####################
 
 def vgg_pair(**kwargs):
-    model = VGG(make_layers(cfg['A'],initial=6,batch_norm=True),pairwise=False)
+    model = VGG(make_layers(cfg['A'],initial=6,batch_norm=True),pairwise=True)
     return model
 net16_pair = vgg_pair()
+mobile = mobilenet()

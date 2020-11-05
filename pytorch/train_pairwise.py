@@ -10,7 +10,7 @@ from tqdm import tqdm
 import os.path as osp
 
 from utils import Config
-from model import model_pretrained, MyVgg11, net16, net16_pair
+from model import model_pretrained, MyVgg11, net16, net16_pair, mobile
 from data import get_pairloader
 import sys
 import matplotlib.pyplot as plt
@@ -130,8 +130,14 @@ if __name__=='__main__':
     loss_train_list = []
     loss_test_list = []
 
-    model = net16_pair
-        
+    # model = net16_pair
+    model = mobile
+    model.features[0][0] = nn.Conv2d(6, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+    fc_features = model.classifier[1].in_features
+    model.classifier[1] = nn.Sequential(
+        nn.Linear(fc_features, classes),
+        nn.Sigmoid())
+    
     criterion = nn.BCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=Config['learning_rate'], weight_decay=0.0001)
     device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')        
