@@ -109,19 +109,6 @@ def train_model(dataloader, model, criterion, optimizer, device, num_epochs, dat
 
 
 if __name__=='__main__':
-
-    '''Hyper parameters of the dataset:
-
-    dataiter = iter(dataloaders["train"])
-    images, labels = dataiter.next()
-    >>> images.shape
-    torch.Size([64, 3, 224, 224])
-    >>> labels.shape
-    torch.Size([64])
-    >>> classes
-    153
-    '''
-
     
     dataloaders, classes, dataset_size = get_pairloader(debug=Config['debug'], batch_size=Config['batch_size'], num_workers=Config['num_workers'])
     # acc_list - global variables

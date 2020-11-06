@@ -228,10 +228,10 @@ class polyvore_pairset:
         # pairs without label
         pair_list = []
         with open(osp.join(self.root_dir, Config['pair_test']), 'r') as pair_open:
-            line = pair_open.readline()
-            temp_list = line.strip().split(" ")
-            pair_list.append([temp_list[1], temp_list[2]])
-
+            for line in pair_open.readlines():
+                temp_list = line.strip('\n').split(" ")  
+                pair_list.append([temp_list[0], temp_list[1]])
+        # print(pair_list)
         # create X pairs
         files_list = os.listdir(self.image_dir)
         files_set = set(map(lambda x: x[:-4], files_list))
@@ -292,3 +292,21 @@ def get_pairloader(debug, batch_size, num_workers):
                                  num_workers=num_workers)
                                  for x in ['train', 'test']}
     return dataloaders, 1, dataset_size    
+
+
+class polyvore_test_pair(Dataset):
+    def __init__(self, X_test, transform):
+        self.X_test = X_test
+        self.transform = transform
+        self.image_dir = osp.join(Config['root_path'], 'images')
+
+
+    def __len__(self):
+        return len(self.X_test)
+
+
+    def __getitem__(self, item):
+        file_path1 = osp.join(self.image_dir, self.X_test[item][0])
+        file_path2 = osp.join(self.image_dir, self.X_test[item][1])
+        new_X = torch.cat((self.transform(Image.open(file_path1)), self.transform(Image.open(file_path2))), 0)
+        return self.X_test[item], new_X

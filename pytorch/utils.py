@@ -25,17 +25,17 @@ Config['pair_test'] = 'test_pairwise_compat_hw.txt'
 
 Config['train_json'] = 'train.json'
 Config['valid_json'] = 'valid.json'
-Config['test_pairwise_compat'] = 'test_pairwise_compat_hw.txt'
-
+Config['test_pairwise_output'] = 'test_pairwise_predict.txt'
 # found in github
 Config['test_json'] = '../test.json'
 
 Config['resnet_pth'] = 'resnet_model.pth'
 Config['vgg_pth'] = 'vgg_model.pth'
+Config['pairwise_pth'] = 'pairwise_model.pth'
 
 Config['use_cuda'] = True
-Config['debug'] = False
-Config['num_epochs'] = 20
+Config['debug'] = True
+Config['num_epochs'] = 5
 Config['batch_size'] = 64
 
 Config['learning_rate'] = 0.002
