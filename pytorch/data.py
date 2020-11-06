@@ -209,20 +209,20 @@ class polyvore_pairset:
         for p in pair_open:
             p = p.strip('\n')
             temp_list = p.split(" ")
-            pair_list.append([temp_list[1], temp_list[2]])
+            pair_list.append((temp_list[1]+".jpg", temp_list[2]+".jpg"))
             pair_label.append(temp_list[0])
         # print(pair_list)
         # create X, y pairs
-        files_list = os.listdir(self.image_dir)
-        files_set = set(map(lambda x: x[:-4], files_list))
-        X = []; y = []
-        for i in range(len(pair_list)):
-            if pair_list[i][0] in files_set and pair_list[i][1] in files_set:
-                    X.append([pair_list[i][0]+".jpg", pair_list[i][1]+".jpg"])
-                    y.append(pair_label[i])
-        print('len of train set X: {}'.format(len(X)))
+        # files_list = os.listdir(self.image_dir)
+        # files_set = set(map(lambda x: x[:-4], files_list))
+        # X = []; y = []
+        # for i in range(len(pair_list)):
+        #     if pair_list[i][0] in files_set and pair_list[i][1] in files_set:
+        #             X.append([pair_list[i][0]+".jpg", pair_list[i][1]+".jpg"])
+        #             y.append(pair_label[i])
+        print('len of train set X: {}'.format(len(pair_list)))
 
-        return X, y
+        return pair_list, pair_label
 
     def create_testset(self):
         # pairs without label
