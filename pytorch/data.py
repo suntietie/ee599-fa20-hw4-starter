@@ -259,7 +259,7 @@ class polyvore_pair_train(Dataset):
 
     def __getitem__(self, item):
         file_path1 = osp.join(self.image_dir, self.X_train[item][0])
-        file_path2 = osp.join(self.image_dir, self.X_train[item][0])
+        file_path2 = osp.join(self.image_dir, self.X_train[item][1])
         new_X = torch.cat((self.transform(Image.open(file_path1)), self.transform(Image.open(file_path2))), 0)
         return new_X, self.y_train[item]
 
