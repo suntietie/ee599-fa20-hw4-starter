@@ -127,28 +127,28 @@ if __name__=='__main__':
     acc_test_list = []
 
 
-        if Config['pretrained'] == True:
-            num_ftrs = model_pretrained.fc.in_features
-            model_pretrained.fc = nn.Linear(num_ftrs, classes)
+    if Config['pretrained'] == True:
+        num_ftrs = model_pretrained.fc.in_features
+        model_pretrained.fc = nn.Linear(num_ftrs, classes)
 
-            criterion = nn.CrossEntropyLoss()
-            optimizer = optim.RMSprop(model_pretrained.parameters(), lr=Config['learning_rate'])
-            device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.RMSprop(model_pretrained.parameters(), lr=Config['learning_rate'])
+        device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')
 
-            train_model(dataloaders, model_pretrained, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size, pretrained=Config['pretrained'])
-            plot(acc_train_list, acc_test_list, "pretrained.jpg", num_epochs=Config['num_epochs'])
+        train_model(dataloaders, model_pretrained, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size, pretrained=Config['pretrained'])
+        plot(acc_train_list, acc_test_list, "pretrained.jpg", num_epochs=Config['num_epochs'])
         
-        else:
+    else:
 
-            if Config['VGG16']:
-                model = net16
-            else:    
-                model = MyVgg11(class_num=classes)
-            
-            criterion = nn.CrossEntropyLoss()
-            optimizer = torch.optim.Adam(model.parameters(), lr=Config['learning_rate'], weight_decay=0.0001)
-            device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')        
+        if Config['VGG16']:
+            model = net16
+        else:    
+            model = MyVgg11(class_num=classes)
+        
+        criterion = nn.CrossEntropyLoss()
+        optimizer = torch.optim.Adam(model.parameters(), lr=Config['learning_rate'], weight_decay=0.0001)
+        device = torch.device('cuda:0' if torch.cuda.is_available() and Config['use_cuda'] else 'cpu')        
 
-            train_model(dataloaders, model, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size, pretrained=Config['pretrained'])
-            plot(acc_train_list, acc_test_list, "vgg.jpg", num_epochs=Config['num_epochs'])  
+        train_model(dataloaders, model, criterion, optimizer, device, num_epochs=Config['num_epochs'], dataset_size=dataset_size, pretrained=Config['pretrained'])
+        plot(acc_train_list, acc_test_list, "vgg.jpg", num_epochs=Config['num_epochs'])  
 
